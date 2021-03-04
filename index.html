@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+
+		<style>
+			#content {
+				height: 100vh;
+			}
+			body {
+				margin: 0;
+			}
+			iframe {
+				border-width: 0;
+			}
+
+			#frame-container {
+				width: 100%;
+				height: 100vh;
+			}
+
+			#frame {
+				width: 100%;
+				height: 400px;
+				margin: 0 auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="content"></div>
+
+		<script>
+			async function fuckQuotes({
+				name = "Diego",
+				from = "Sebastian",
+				company = "",
+				noun = "",
+				action = "",
+				something = "",
+				tool = "",
+				behavior = "",
+				thing = "",
+				language = ""
+			} = {}) {
+				const argumentsObject = {
+					name,
+					from,
+					company,
+					noun,
+					action,
+					something,
+					tool,
+					behavior,
+					thing,
+					language
+				};
+
+				//logic for getting parameter names from function
+				/*
+				const STRIP_COMMENTS = /(\/\/.*$)|(\/\*[\s\S]*?\*\/)|(\s*=[^,\)]*(('(?:\\'|[^'\r\n])*')|("(?:\\"|[^"\r\n])*"))|(\s*=[^,\)]*))/mg;
+				const ARGUMENT_NAMES = /([^\s,]+)/g;
+
+				function getParamNames(func) {
+					var fnStr = func.toString().replace(STRIP_COMMENTS, "");
+					var result = fnStr
+					.slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")"))
+						.match(ARGUMENT_NAMES);
+						if (result === null) result = [];
+						return result;
+				};
+				const parameters = getParamNames(fuckQuotes);
+				 */
+				let emptyParam = [];
+				for (const [key, value] of Object.entries(argumentsObject)) {
+	
+					if (key === 'action' && !value) {
+						emptyParam.push('do');
+					} else if (!value) {
+						emptyParam.push(key);
+					}
+				}
+
+				async function getOption() {
+					const response = await fetch("https://foaas.com/operations");
+					const options = await response.json();
+					let invalidEndpoint = true;
+					let randomNumber;
+
+					function getRandomNumber() {
+						return Math.floor(Math.random() * options.length);
+					}
+
+					while (invalidEndpoint) {
+						randomNumber = getRandomNumber();
+						
+						let possibleEndpoint = options[randomNumber].url
+												
+						invalidEndpoint = emptyParam.some(param => possibleEndpoint.includes(param));
+
+						console.log(randomNumber);
+						console.log(possibleEndpoint);
+					}
+
+					return options[randomNumber];
+				}
+				function getEndpoint() {
+					let endpoint = quote.url;
+					for (const [key, value] of Object.entries(argumentsObject)) {
+						if (key === "action") {
+							endpoint = endpoint.replace(":do", `${value}`);
+						}
+						endpoint = endpoint.replace(`:${key}`, `${value}`);
+					}
+
+					return endpoint;
+				}
+
+				async function getData() {
+					const response = await fetch(
+						`https://foaas.com${endpoint}?shoutcloud`,
+						{
+							headers: {
+								// devuelve text/html por defecto
+								// Accept: 'application/json'
+							},
+						}
+					);
+					return response.text();
+				}
+
+				let quote = await getOption();
+				while (false) {}
+
+				const endpoint = getEndpoint();
+
+				getData().then((textResponse) => {
+					// create new instance of DOMParser to parse response (html)
+
+					let final = document.getElementById("content");
+					const parser = new DOMParser();
+					let doc = parser.parseFromString(textResponse, "text/html");
+
+					if (window.parent.document.getElementById("frame-container")) {
+						final.innerHTML = "";
+					}
+					//create frame and its container and append it to the DOM
+					const frameContainer = document.createElement("div");
+					frameContainer.id = "frame-container";
+					let frame = document.createElement("iframe");
+					frame.id = "frame";
+					frameContainer.appendChild(frame);
+					final.appendChild(frameContainer);
+
+					// set head from iframe to equal head of html document received by API
+					frame.contentDocument.head.innerHTML = doc.head.innerHTML;
+					// set body from iframe to equal body of html document received by API
+					frame.contentDocument.body = doc.body;
+				});
+			}
+
+			fuckQuotes();
+			//example of handling text/html response from API
+
+			/* async function fuck() {
+				const response = await fetch(
+					"https://foaas.com/off/Tom/Everyone?shoutcloud",
+					{
+						headers: {
+							// devuelve text/html por defecto
+							// Accept: 'application/json'
+						},
+					}
+				);
+				return response.text();
+			}
+
+			fuck().then((textResponse) => {
+				// create new instance of DOMParser to parse response (html)
+
+				const parser = new DOMParser();
+				let doc = parser.parseFromString(textResponse, "text/html");
+
+				//create frame and its container and append it to the DOM
+				const frameContainer = document.createElement("div");
+				frameContainer.id = "frame-container";
+				let frame = document.createElement("iframe");
+				frame.id = "frame";
+				let final = document.getElementById("content");
+				frameContainer.appendChild(frame);
+				final.appendChild(frameContainer);
+
+				// set head from iframe to equal head of html document received by API
+				frame.contentDocument.head.innerHTML = doc.head.innerHTML;
+				// set body from iframe to equal body of html document received by API
+				frame.contentDocument.body = doc.body;
+			}); */
+		</script>
+	</body>
+</html>
