@@ -5,7 +5,9 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Document</title>
-
+		
+		<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+		<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
 		<style>
 			#content {
 				height: 100vh;
@@ -24,15 +26,40 @@
 
 			#frame {
 				width: 100%;
-				height: 400px;
+				height: 600px;
 				margin: 0 auto;
 			}
 		</style>
 	</head>
 	<body>
+
+		<!-- <form action="action_page.php">
+			<div class="container">
+				rgb(236,77,55)
+			  <h1>The Fuckinator</h1>
+			  <p>Please complete information to get your quote.</p>
+			  <hr>
+		  
+			  <label for="email"><b>Email</b></label>
+			  <input type="text" placeholder="Enter Email" name="email" id="email" required>
+		  
+			  <label for="psw"><b>Password</b></label>
+			  <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+		  
+			  <label for="psw-repeat"><b>Repeat Password</b></label>
+			  <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>
+			  <hr>
+		  
+			  <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
+			  <button type="submit" class="registerbtn">Register</button>
+			</div>
+		</form>
+		 -->
 		<div id="content"></div>
 
+		
 		<script>
+			let test;
 			async function fuckQuotes({
 				name = "Diego",
 				from = "Sebastian",
@@ -43,7 +70,9 @@
 				tool = "",
 				behavior = "",
 				thing = "",
-				language = ""
+				language = "",
+				reaction = "",
+				reference = "",
 			} = {}) {
 				const argumentsObject = {
 					name,
@@ -55,7 +84,9 @@
 					tool,
 					behavior,
 					thing,
-					language
+					language,
+					reaction,
+					reference,
 				};
 
 				//logic for getting parameter names from function
@@ -75,13 +106,13 @@
 				 */
 				let emptyParam = [];
 				for (const [key, value] of Object.entries(argumentsObject)) {
-	
-					if (key === 'action' && !value) {
-						emptyParam.push('do');
+					if (key === "action" && !value) {
+						emptyParam.push("do");
 					} else if (!value) {
 						emptyParam.push(key);
 					}
 				}
+				emptyParam.push("version");
 
 				async function getOption() {
 					const response = await fetch("https://foaas.com/operations");
@@ -95,13 +126,12 @@
 
 					while (invalidEndpoint) {
 						randomNumber = getRandomNumber();
-						
-						let possibleEndpoint = options[randomNumber].url
-												
-						invalidEndpoint = emptyParam.some(param => possibleEndpoint.includes(param));
 
-						console.log(randomNumber);
-						console.log(possibleEndpoint);
+						let possibleEndpoint = options[randomNumber].url;
+
+						invalidEndpoint = emptyParam.some((param) =>
+							possibleEndpoint.includes(param)
+						);
 					}
 
 					return options[randomNumber];
@@ -132,9 +162,7 @@
 				}
 
 				let quote = await getOption();
-				while (false) {}
-
-				const endpoint = getEndpoint();
+				let endpoint = getEndpoint();
 
 				getData().then((textResponse) => {
 					// create new instance of DOMParser to parse response (html)
@@ -143,24 +171,29 @@
 					const parser = new DOMParser();
 					let doc = parser.parseFromString(textResponse, "text/html");
 
-					if (window.parent.document.getElementById("frame-container")) {
+					if (document.getElementById("frame-container")) {
 						final.innerHTML = "";
 					}
+
 					//create frame and its container and append it to the DOM
-					const frameContainer = document.createElement("div");
+					frameContainer = document.createElement("div");
 					frameContainer.id = "frame-container";
+
 					let frame = document.createElement("iframe");
 					frame.id = "frame";
+
+					frame.onload = function () {
+						// set head from iframe to equal head of html document received by API
+						frame.contentDocument.head.innerHTML = doc.head.innerHTML;
+						// set body from iframe to equal body of html document received by API
+						frame.contentDocument.body = doc.body;
+						
+					};
+
 					frameContainer.appendChild(frame);
 					final.appendChild(frameContainer);
-
-					// set head from iframe to equal head of html document received by API
-					frame.contentDocument.head.innerHTML = doc.head.innerHTML;
-					// set body from iframe to equal body of html document received by API
-					frame.contentDocument.body = doc.body;
 				});
 			}
-
 			fuckQuotes();
 			//example of handling text/html response from API
 
