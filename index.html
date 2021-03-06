@@ -14,6 +14,7 @@
 			}
 			body {
 				margin: 0;
+				text-align: center;
 			}
 			iframe {
 				border-width: 0;
@@ -29,9 +30,44 @@
 				height: 600px;
 				margin: 0 auto;
 			}
+			#logo-container {
+				width: auto;
+				/* height: 20vh; */
+				margin: auto;
+			}
+			#logo {
+				margin: auto;
+				width: 13vw;
+				/* height: 11.5169340464vw; */
+				padding-top: 20px;
+			}
+
+			@media screen and (max-width: 992px) {
+				#logo {
+					width: 20vw;
+				}
+			}
+
+			@media screen and (max-width: 768px) {
+				#logo {
+					width: 25vw;
+				}
+
+			}
+			@media screen and (max-width: 480px) {
+				#logo {
+					width: 35vw;
+				}
+
+			}
 		</style>
 	</head>
 	<body>
+
+		<div id="logo-container">
+			<img id="logo" src="/images/1logo.png" />
+
+		</div>
 
 		<!-- <form action="action_page.php">
 			<div class="container">
@@ -98,7 +134,7 @@
 					var fnStr = func.toString().replace(STRIP_COMMENTS, "");
 					var result = fnStr
 					.slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")"))
-						.match(ARGUMENT_NAMES);
+x|||						.match(ARGUMENT_NAMES);
 						if (result === null) result = [];
 						return result;
 				};
